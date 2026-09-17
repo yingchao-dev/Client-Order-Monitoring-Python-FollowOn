@@ -1,20 +1,23 @@
 """
-Zweck: Erkennt Ausfuehrungen, deren Preis mehr als 2 oder 3 Standardabweichungen
-       vom rollierenden Mittelwert (Fenstergroesse: 10/20/50 Ausfuehrungen,
-       gruppiert nach ISIN) abweicht - dynamische Weiterentwicklung der
-       in Layer② (VBA-Projekt) verwendeten festen 5%-Schwelle.Analog zur
-       VBA-Version wird der aktuelle Wert beim Rolling-Window ausgeschlossen.
-Input: cleaned_orders_snapshot_20260912.csv (Spalte ISIN, Execution Price,
-       status, Execution Time,Eligible_For_Price_Check)
-Output: DataFrame mit zusaetzlicher Spalte 'is_statistical_outlier_wXX_kY'
-       fuer jede getestete Fenstergroesse-k-Kombination
-Bekannte Einschraenkung: Fenstergroesse und k-Wert sind empirisch plausible
-       Standardwerte, nicht statistisch optimiert (keine Ground-Truth-Labels
-       verfuegbar). Bei ISINs mit weniger als 5 vorherigen Ausfuehrungen
-       (min_periods) kann noch kein rollierender Durchschnitt berechnet werden;
-       diese Zeilen werden mit NaN markiert und nicht bewertet.Siehe VBA-Projekt
-       (Layer②/MonitorPriceDeviation) fuer die urspruengliche, feste Schwellenwertmethode:
+Zweck: Fuehrt einen Parameter-Sensitivitaetstest durch (Fenstergroesse 10/20/50, k=2/3) und erkennt dabei
+       Ausfuehrungen, deren Preis mehr als k Standardabweichungen vom rollierenden Mittelwert (gruppiert
+       nach ISIN) abweicht - dynamische Weiterentwicklung der im VBA-Projekt (Layer②/MonitorPriceDeviation)
+       verwendeten festen 5%-Schwelle:
        [https://github.com/yingchao-dev/Client-Order-DataCleaning-Monitoring-RiskExposure-Tool/blob/main/01_Source_Code/03_OrderMonitoring.bas]
+       Analog zur VBA-Version wird der aktuelle Wert beim Rolling-Window ausgeschlossen.
+Input: cleaned_orders_snapshot_20260912.csv (Spalte ISIN, Execution Price, status, Execution Time,
+       Eligible_For_Price_Check)
+Output: DataFrame mit zusaetzlicher Spalte 'is_statistical_outlier_wXX_kY' fuer jede getestete
+        Fenstergroesse-k-Kombination.
+Bekannte Einschraenkung: Fenstergroesse und k-Wert sind empirisch plausible Standardwerte, nicht statistisch
+        optimiert (keine Ground-Truth-Labels verfuegbar). Bei ISINs mit weniger als 5 vorherigen Ausfuehrungen
+        (min_periods) kann noch kein rollierender Durchschnitt berechnet werden; diese Zeilen werden mit
+        NA markiert und nicht bewertet. Interpretation der Spalte 'is_statistical_outlier_wXX_kY': Sie
+        markiert Kandidaten fuer die manuelle Nachpruefung, keine bestaetigten Anomalien. Im Grenzfall std=0
+        (keine Preisschwankung in der Historie) wird bereits jede minimale Abweichung markiert - eine bewusst
+        hoch gewaehlte Sensitivitaet, um kein potenzielles Risiko zu uebersehen, kein Bug. Der Algorithmus dient
+        als Vorfilter zur Priorisierung, nicht als abschliessende Entscheidungsinstanz - die endgueltige Bewertung
+        obliegt den fachlich zustaendigen Mitarbeitenden.
 """
 import pandas as pd
 
@@ -71,18 +74,19 @@ for window in [10, 20, 50]:
         n_valid = df[col].notna().sum()         # Zaehlt Zeilen mit echtem True/False (NA ausgeschlossen) - also tatsaechlich bewertete Ausfuehrungspreise.
         print(f"window={window}, k={k}: {n_outliers} of {n_valid} valid rows")
 """
-Fazit der Parameter-Sensitivitaetstests (Fenstergroesse 10/20/50, k=2/3):
-Die Anzahl markierter Ausreisser sinkt tendenziell mit groesserer Fenstergroesse
-und groesserem k (von 78 bei window=10/k=2 bis 30 bei window=20/k=3, bei 853
-bewertbaren Zeilen). Welche Kombination "richtig" ist, gibt es nicht - das haengt
-vom Anwendungsfall ab: eine sensiblere Einstellung (kleines Fenster, k=2) erfasst
-mehr potenzielle Faelle bei hoeherer Fehlalarmquote, eine konservativere Einstellung
-(grosses Fenster, k=3) reduziert Fehlalarme. Letzteres birgt jedoch ein eigenes
-Risiko: Ein grosses Fenster stuetzt sich auf weit zurueckliegende Daten, wodurch der
-Referenzwert traege auf echte Verschiebungen im Preisverhalten reagiert (Lag-Effekt) -
-eine aktuell tatsaechlich auffaellige Ausfuehrung koennte so uebersehen werden, weil
-sie an einem veralteten, kuenstlich geglaetteten Massstab gemessen wird. Selbst bei
-identischem Datensatz fuehren unterschiedliche Zwecke und Marktbedingungen zu
-unterschiedlichen sinnvollen Parametern - die Wahl ist nicht durch die Daten allein
-festgelegt. In Grenzfaellen koennten zusaetzliche oder andere Parameter noetig werden.
+Fazit der Parameter-Sensitivitaetstests (Fenstergroesse 10/20/50, k=2/3): Die Anzahl markierter Ausreisser
+sinkt tendenziell mit groesserer Fenstergroesse und groesserem k (von 78 bei window=10/k=2 bis 30 bei
+window=20/k=3, bei 853 bewertbaren Zeilen). Welche Kombination "richtig" ist, gibt es nicht - das haengt vom
+Anwendungsfall ab: eine sensiblere Einstellung (kleines Fenster, k=2) erfasst mehr potenzielle Faelle bei
+hoeherer Fehlalarmquote, eine konservativere Einstellung (grosses Fenster, k=3) reduziert Fehlalarme.
+Letzteres birgt jedoch ein eigenes Risiko: Ein grosses Fenster stuetzt sich auf weit zurueckliegende Daten,
+wodurch der Referenzwert traege auf echte Verschiebungen im Preisverhalten reagiert (Lag-Effekt) - eine
+aktuell tatsaechlich auffaellige Ausfuehrung koennte so uebersehen werden, weil sie an einem veralteten,
+kuenstlich geglaetteten Massstab gemessen wird. Selbst bei identischem Datensatz fuehren unterschiedliche
+Zwecke und Marktbedingungen zu unterschiedlichen sinnvollen Parametern - die Wahl ist nicht durch die Daten
+allein festgelegt. In Grenzfaellen koennten zusaetzliche oder andere Parameter noetig werden. Ausserdem
+haengen die Ergebnisse somit nicht allein vom gewaehlten Fensterparameter ab, sondern ebenso von der
+verfuegbaren Datenmenge je ISIN: Bei begrenzter Historie erreicht ein grosses Fenster fuer viele ISINs nie
+seine volle Groesse, und der Referenzwert stuetzt sich dann auf saemtliche bisher vorliegenden Ausfuehrungen
+dieser ISIN, da keine aelteren Daten mehr ausgeschlossen werden koennen.
 """
