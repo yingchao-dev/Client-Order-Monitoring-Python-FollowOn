@@ -29,6 +29,7 @@ df = df[                                                        # in der Rohdate
     (df['Status'].isin(['Executed', 'Partially Executed'])) &
     (df['Order Type'] == 'Market Order') &       # Jede Klammer ist eine Bedingung (True/False je Zeile);
     (df['Timestamp'].notna()) &                  # df[...] darum filtert danach die Zeilen.
+    (df['MarketPhase'] == 'Continuous') &
     (df['Execution Time'].notna())
 ].copy()                                         # .copy() ist ab Pandas 3.0 (Copy-on-Write) nicht mehr zwingend, dient hier aber der Klarheit.
 print("Rows after filtering:", len(df))
@@ -46,7 +47,7 @@ window_by_type = {
 }
 df['rolling_mean_delay'] = np.nan  # DataFrames erlauben keine leeren Spalten (Struktur erfordert einen Wert pro Zeile, bedingt durch die zugrunde liegende
 df['rolling_std_delay'] = np.nan   # numpy-Array-Struktur) - np.nan fuellt daher vorab jede Zeile und legt gleichzeitig den Spaltentyp auf float64 fest.
-
+                                   # Theoretisch nicht zwingend: Die Spaltennamen koennten auch erst in der Schleife unten, beim ersten Befuellen, implizit festgelegt werden.
 for instrument_type, window in window_by_type.items():     # Schleife ueber ein Dictionary (dict): .items() gibt bei jedem Durchlauf
     mask = df['Instrument Type'] == instrument_type        # Schluessel (instrument_type) und Wert (window) gemeinsam zurueck.
     df.loc[mask, 'rolling_mean_delay'] = df.loc[mask, 'Delay Seconds'].shift(1).rolling(window=window, min_periods=5).mean()
