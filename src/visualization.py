@@ -59,7 +59,7 @@ for target_isin in isin_list:
     plt.fill_between(chart_df['Execution Time'], chart_df['lower_bound'], chart_df['upper_bound'], color='blue', alpha=0.15, label='±2 Std Dev')# Farbflaeche: Normalbereich (obere/untere Grenze)
 
     outlier_rows = chart_df[chart_df['is_statistical_outlier'] == True]
-    plt.scatter(outlier_rows['Execution Time'], outlier_rows['Execution Price'], color='red', label='Flagged Outlier', zorder=5)# Farbflaeche: Normalbereich (obere/untere Grenze)
+    plt.scatter(outlier_rows['Execution Time'], outlier_rows['Execution Price'], color='red', label='Flagged Outlier', zorder=5)# Punktmarkierung: als Ausreisser eingestufte Ausfuehrungspreise (rot)
 
     plt.title(f'Price Deviation Detection - {target_isin}')
     plt.xlabel('Execution Time')
