@@ -24,7 +24,7 @@ Dieses Projekt verwendet die bereinigten Daten aus `Cleaned_Data` (Layer ① des
 ## Lokale Ausfuehrung
 
 1. Es sollte der gesamte Ordner heruntergeladen werden (nicht einzelne Dateien), da die Skripte ueber relative Pfade auf die Daten in `data/` zugreifen. Beim Herunterladen nur einzelner Dateien wird `data/` nicht gefunden und es kommt zu einem Fehler.
-2. Zum Ausfuehren werden Python sowie die Bibliotheken pandas, numpy und matplotlib benoetigt. Bei bevorzugter Installation ueber die Kommandozeile optional: `pip install -r requirements.txt`
+2. Vor der Ausfuehrung muessen die benoetigten Bibliotheken (pandas, numpy, matplotlib) installiert werden — dieser Schritt ist fuer jede neue Umgebung erforderlich, da Python (anders als z. B. Java) Abhaengigkeiten projektspezifisch statt global verwaltet. Am einfachsten ueber die Kommandozeile: `pip install -r requirements.txt`
 3. Bei Ausfuehrung ueber die Kommandozeile muss zunaechst in den Ordner `src/` gewechselt werden, danach das Skript ausfuehren, z. B.:
 
 ```
