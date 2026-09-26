@@ -8,7 +8,7 @@
 
 **Struktur:** 3 unabhaengige Module (price_deviation / execution_delay / visualization), keine feste Ausfuehrungsreihenfolge
 
-Dieses Projekt verwendet die bereinigten Daten aus `Cleaned_Data` (Layer ① des VBA-Projekts) als Eingabedatenquelle. Der Fokus liegt auf einer statistisch vertieften Behandlung der festen Schwellenwertmethoden aus der VBA-Regelueberwachungsschicht (Layer ②) — konkret der Preisabweichungsschwelle von 5% sowie der nach Instrumententyp gestaffelten Ausfuehrungsverzoegerungsschwellen —, wobei die urspruenglich statischen Regeln durch dynamische Baselines auf Basis gleitender Fenster (rolling window) und adaptive, standardabweichungsbasierte Schwellenwerte ersetzt werden.
+Dieses Projekt verwendet die bereinigten Daten aus `Cleaned_Data` (Layer ① des VBA-Projekts) als Eingabedatenquelle. Der Fokus liegt auf einer statistisch vertieften Behandlung der festen Schwellenwertmethoden aus der VBA-Regelueberwachungsschicht (Layer ②) — konkret der Preisabweichungsschwelle von 5% sowie der nach Instrumententyp gestaffelten Ausfuehrungsverzoegerungsschwellen —, wobei die urspruenglich statischen Regeln durch dynamische Baselines auf Basis gleitender Fenster (rolling window) und adaptive, standardabweichungsbasierte Schwellenwerte ersetzt werden. Die Visualisierung der Ergebnisse brachte zudem zwei methodische Schwachstellen der rollierenden Methode zutage (Masking-Effekt, Cold-Start-Blind-Spot), die in den reinen Tabellendaten nicht erkennbar waren - siehe [analysis/findings.md](analysis/findings.md).
 
 ## Wichtige Dateien
 
