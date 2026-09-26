@@ -57,8 +57,7 @@ aus einem einfachen Grund: Die sehr hohe Handelsdichte fuehrt dazu, dass die
 ersten 5 Ausfuehrungen auf der Zeitachse nur eine minimale Breite einnehmen,
 wodurch sie mit blossem Auge nicht mehr erkennbar sind. Dies zeigt zugleich,
 dass die Cold-Start-Phase je nach Wertpapier unterschiedlich leicht
-uebersehen werden kann. Der eigentliche Erkenntniswert liegt darin, dass das 
-Risiko des "Cold-Start-Blind-Spots" im Kontext des Hochfrequenzhandels - unabhaengig vom jeweiligen Finanzprodukt - tendenziell unauffaelliger (und damit leichter zu uebersehen) ist.
+uebersehen werden kann. Der eigentliche Erkenntniswert liegt darin, dass das Risiko des "Cold-Start-Blind-Spots" bei hoher Handelsfrequenz - unabhaengig vom jeweiligen Finanzprodukt - tendenziell unauffaelliger (und damit leichter zu uebersehen) ist.
 
 
 
